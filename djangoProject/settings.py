@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'haystack',
     'app01.apps.App01Config',
 ]
 
@@ -136,3 +137,23 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+
+# 配置 全文检索框架(haystack)使用 检索引擎(whoosh)
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        # 使用whoosh引擎
+        # haystack 通过 下面路径 中的 WhooshEngine类，来使用whoosh检索引擎
+        # WhooshEngine的路径 venv/lib/site-packages/haystack/backends/whoosh_backend.py WhooshEngine类
+        #'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine', #英文有结果
+        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+        #'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+        # 索引文件的 存放路径，所有的 索引文件 都存放在 该目录下。生成索引文件时，自动 在目录(BASE_DIR)下 创建目录(whoosh_index)
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+    }
+}
+
+# 检索引擎(whoosh)的作用: 对 表中的某些字段 进行 关键词分析，在 关键词 和 表中其它记录s 之间 建立联系(索引表)
+# 表中 字段内容 发生变化时，索引 也应发生变化 来适应 字段内容的变化。
+
+# 当表中数据 发生变化(添加 删除 修改)时，自动生成 新的索引(替换 旧的索引)
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'

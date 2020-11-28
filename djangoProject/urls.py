@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path
+from django.urls import path, include
 from django.conf.urls import url
 from django.contrib import admin
 from app01 import views
@@ -22,4 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^publisher_list/', views.publisher_list),
     url(r'^publisher_add/', views.publisher_add),
+    #url(r'^search/', include('haystack.urls')),
+    url(r'^search/', include('haystack.urls')),
 ]
