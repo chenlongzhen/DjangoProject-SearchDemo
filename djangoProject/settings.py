@@ -57,7 +57,7 @@ ROOT_URLCONF = 'djangoProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
+        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'templates'/ 'search']
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -133,7 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-#  路径
+#  路径 https://blog.csdn.net/xujin0/article/details/83421626
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]

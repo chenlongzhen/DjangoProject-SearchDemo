@@ -1,29 +1,71 @@
-<!DOCTYPE html> <html lang="en"> <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>XXBC 搜索</title>
+    {% load static %}
 
+    {#    <link href="{% static "plugins/bootstrap-3.3.7-dist/css/bootstrap.min(1).css" %}" rel="stylesheet">#}
     <link rel="stylesheet" href="/static/plugins/bootstrap-3.3.7-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/dsb.css">
+    <script src="{% static "js/jquery-2.1.4.min.js" %}"></script>
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+    <style type="text/css">
+        #re {
+            border: 1px solid #666666;
+            border-top: none;
+            width: 500px;
+            margin: 0 auto;
+            padding: 2px;
+            display: none;
+            list-style: none;
+        }
+    </style>
 
-    {% block css %}
 
-    {% endblock %}
+    {#  autocomplete function  #}
+    <script>
+        $(document).ready(function () {
+            $("#searchinput").on("input", function () {
+                $("#re").html("");
+                $("#re").css("display", "none");
+                var url = "search?s=" + jQuery.trim($("#searchinput").val());
+                if (jQuery.trim($("#searchinput").val()) != '') {
+                    $.get(url, function (data) {
+                        var obj = jQuery.parseJSON(data);
+                        $("#re").html("");
+                        $.each(obj, function (n, value) {
+                            $("#re").append("<li>" + value + "</li>");
+                        });
+                        $("#re").css("display", "block");
+                    });
+                }
+            });
+        });
+    </script>
 </head>
-
 <body>
+
 
 {% block content %}
     <h2>Search</h2>
 
-    <form method="get" action=".">
+    <form method="get" action="." , autocomplete="off">
+
         <table>
-            {{ form.as_table }}
-            <tr>
-                <td>&nbsp;</td>
-                <td>
-                    <input type="submit" value="Search">
-                </td>
-            </tr>
+            <div style="padding: 100px 100px 10px;">
+                <div style="width: 500px; margin: 0 auto;">
+                    {#            {{ form.as_table }}#}
+                    <input type="text" class="form-control" id="searchinput" name="q">
+                </div>
+                <ul id="re">
+                </ul>
+                <tr>
+                    <td>
+                        <input type="submit" value="Search">
+                    </td>
+                </tr>
+            </div>
         </table>
 
         {% if query %}
@@ -31,7 +73,7 @@
 
             {% for result in page.object_list %}
                 <p>
-{#                     <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>#}
+                    {#                     <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>#}
                 </p>
                 <p>{{ result.object.name }}</p>
             {% empty %}
@@ -40,9 +82,12 @@
 
             {% if page.has_previous or page.has_next %}
                 <div>
-                    {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
+                    {% if page.has_previous %}
+                        <a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous
+                    {% if page.has_previous %}</a>{% endif %}
                     |
-                    {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+                    {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next
+                    &raquo;{% if page.has_next %}</a>{% endif %}
                 </div>
             {% endif %}
         {% else %}

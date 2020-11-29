@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 from django.shortcuts import render, HttpResponse, redirect
 from app01 import models
-
+import json
 
 # Create your views here.
 def publisher_list(request):
@@ -40,3 +40,20 @@ def publisher_add(request):
 
         # get请求返回一个页面，页面中包含form表单
     return render(request, 'publisher_add.html')
+
+# search autocomplete
+def index(request):
+    return render(request, "searchresult.html")
+
+def search(request):
+    if request.method == 'GET' and 's' in request.GET:
+        quer = request.GET['s']
+        if quer is not None:
+            results = models.Publisher.objects.filter(name__icontains=quer) #修
+            json_list = []
+            for re in results:
+                json_list.append(re.name) # 字段
+            print(f"auto: {json_list}")
+            return HttpResponse(json.dumps(json_list,ensure_ascii=False))
+
+

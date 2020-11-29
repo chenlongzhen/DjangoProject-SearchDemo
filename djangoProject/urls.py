@@ -24,4 +24,7 @@ urlpatterns = [
     url(r'^publisher_add/', views.publisher_add),
     #url(r'^search/', include('haystack.urls')),
     url(r'^search/', include('haystack.urls')),
+    url(r'search/search/', views.search), # autocomplete jquery调用此url返回complete
+    url(r'^index/$', views.index),
+    url(r'index/search/', views.search)
 ]
