@@ -44,58 +44,112 @@
             });
         });
     </script>
+
+    <style>
+        .img_wrap {
+            text-align: center; /*让div内部文字居中*/
+            background-color: #fff;
+            border-radius: 20px;
+            width: 250px;
+            height: 330px;
+            margin: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        #img {
+            width: 300px;
+            margin: 30px;
+        }
+
+        #search_button {
+            width: 400px;
+            margin: 40px;
+        }
+
+        .button input[type="submit"], .gbqfba {
+            background-image: -webkit-linear-gradient(top, #f8f9fa, #f8f9fa);
+            background-color: #f8f9fa;
+            border: 1px solid #f8f9fa;
+            border-radius: 4px;
+            color: #3c4043;
+            font-family: arial, sans-serif;
+            font-size: 14px;
+            margin: 20px 4px;
+            padding: 0 16px;
+            line-height: 27px;
+            height: 36px;
+            min-width: 54px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
+
 </head>
 <body>
 
 
 {% block content %}
-    <h2>Search</h2>
 
-    <form method="get" action="." , autocomplete="off">
+    <div class="img_wrap" style="width: 584px;">
 
-        <table>
-            <div style="padding: 100px 100px 10px;">
-                <div style="width: 500px; margin: 0 auto;">
-                    {#            {{ form.as_table }}#}
-                    <input type="text" class="form-control" id="searchinput" name="q" list="re">
-                </div>
-{#                <ul id="re"> </ul>#}
-                <datalist id="re">
-                </datalist>
-                <tr>
-                    <td>
-                        <input type="submit" value="Search">
-                    </td>
-                </tr>
-            </div>
-        </table>
+        <img id="img" src="{% static "img/CXBC.png" %}">
 
-        {% if query %}
-            <h3>Results</h3>
+        <form method="get" action="." , autocomplete="off">
 
-            {% for result in page.object_list %}
-                <p>
-                    {#                     <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>#}
-                </p>
-                <p>{{ result.object.name }}</p>
-            {% empty %}
-                <p>No results found.</p>
-            {% endfor %}
-
-            {% if page.has_previous or page.has_next %}
+            <table>
                 <div>
-                    {% if page.has_previous %}
-                        <a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous
-                    {% if page.has_previous %}</a>{% endif %}
-                    |
-                    {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next
-                    &raquo;{% if page.has_next %}</a>{% endif %}
+                    <div style="width: 584px; margin: 0 auto;">
+                        <input type="text" class="form-control" id="searchinput" name="q" list="re">
+                    </div>
+                    <datalist id="re">
+                    </datalist>
+{#                            <input id="search_button" type="submit" value="Search">#}
+                            <div class="button"  type="submit" value="Search">
+                                <center>
+                                    <input class="gNO89b" value="CXBC Search" aria-label="Google Search" name="btnK"
+                                           type="submit" >
+                                    <input class="RNmpXc" value="I'm Feeling Lucky" aria-label="I'm Feeling Lucky"
+                                           name="btnI" type="submit" >
+                                </center>
+                            </div>
+
                 </div>
+            </table>
+
+            {% if query %}
+                <h3>Results</h3>
+
+                {% for result in page.object_list %}
+                    <p>
+                        {#                     <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>#}
+                    </p>
+                    <p>{{ result.object.name }}</p>
+                {% empty %}
+                    <p>No results found.</p>
+                {% endfor %}
+
+                {% if page.has_previous or page.has_next %}
+                    <div>
+                        {% if page.has_previous %}
+                            <a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo;
+                        Previous
+                        {% if page.has_previous %}</a>{% endif %}
+                        |
+                        {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}
+                        Next
+                        &raquo;{% if page.has_next %}</a>{% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                {# Show some example queries to run, maybe query syntax, something else? #}
             {% endif %}
-        {% else %}
-            {# Show some example queries to run, maybe query syntax, something else? #}
-        {% endif %}
-    </form>
+        </form>
+    </div>
 {% endblock %}
 
 </body>

@@ -49,10 +49,10 @@ def search(request):
     if request.method == 'GET' and 's' in request.GET:
         quer = request.GET['s']
         if quer is not None:
-            results = models.Publisher.objects.filter(name__icontains=quer) #修
+            results = models.Publisher.objects.filter(key__icontains=quer) # key字段
             json_list = []
             for re in results:
-                json_list.append(re.name) # 字段
+                json_list.append(re.key) # key字段
             print(f"auto: {json_list}")
             return HttpResponse(json.dumps(json_list,ensure_ascii=False))
 
