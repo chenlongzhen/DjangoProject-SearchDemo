@@ -10,18 +10,8 @@
     <link rel="stylesheet" href="/static/css/dsb.css">
     <script src="{% static "js/jquery-2.1.4.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
-    <style type="text/css">
-        #re {
-            border: 1px solid #666666;
-            border-top: none;
-            width: 500px;
-            margin: 0 auto;
-            padding: 2px;
-            display: none;
-            list-style: none;
-        }
-    </style>
 
+    <link href="{% static "css/search.css" %}" rel="stylesheet" type="text/css"/>
 
     {#  autocomplete function  #}
     <script>
@@ -30,7 +20,7 @@
                 $("#re").html("");
                 $("#re").css("display", "none");
                 var url = "search?s=" + jQuery.trim($("#searchinput").val());
-                if (jQuery.trim($("#searchinput").val()) != '') {
+                {#if (jQuery.trim($("#searchinput").val()) != '') {#}
                     $.get(url, function (data) {
                         var obj = jQuery.parseJSON(data);
                         $("#re").html("");
@@ -38,56 +28,14 @@
                             {#$("#re").append("<li>" + value + "</li>");#}
                             $("#re").append("<option value=" + value + "/>");
                         });
+                        var search_value =  jQuery.trim($("#searchinput").val());
                         {#$("#re").css("display", "block");#}
+                         document.getElementById("result").innerHTML = search_value;
                     });
-                }
+            {#       } #}
             });
         });
     </script>
-
-    <style>
-        .img_wrap {
-            text-align: center; /*让div内部文字居中*/
-            background-color: #fff;
-            border-radius: 20px;
-            width: 250px;
-            height: 330px;
-            margin: auto;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        #img {
-            width: 300px;
-            margin: 30px;
-        }
-
-        #search_button {
-            width: 400px;
-            margin: 40px;
-        }
-
-        .button input[type="submit"], .gbqfba {
-            background-image: -webkit-linear-gradient(top, #f8f9fa, #f8f9fa);
-            background-color: #f8f9fa;
-            border: 1px solid #f8f9fa;
-            border-radius: 4px;
-            color: #3c4043;
-            font-family: arial, sans-serif;
-            font-size: 14px;
-            margin: 20px 4px;
-            padding: 0 16px;
-            line-height: 27px;
-            height: 36px;
-            min-width: 54px;
-            text-align: center;
-            cursor: pointer;
-            user-select: none;
-        }
-    </style>
 
 </head>
 <body>
@@ -104,25 +52,23 @@
             <table>
                 <div>
                     <div style="width: 584px; margin: 0 auto;">
-                        <input type="text" class="form-control" id="searchinput" name="q" list="re">
+                        <input type="text" class="form-control" id="searchinput" name="q" list="re" value="default">
                     </div>
                     <datalist id="re">
                     </datalist>
-{#                            <input id="search_button" type="submit" value="Search">#}
-                            <div class="button"  type="submit" value="Search">
-                                <center>
-                                    <input class="gNO89b" value="CXBC Search" aria-label="Google Search" name="btnK"
-                                           type="submit" >
-                                    <input class="RNmpXc" value="I'm Feeling Lucky" aria-label="I'm Feeling Lucky"
-                                           name="btnI" type="submit" >
-                                </center>
-                            </div>
+                    {# <input id="search_button" type="submit" value="Search"> #}
+                    <div class="button" type="submit" value="Search" style="text-align: center;">
+                            <input class="gNO89b" value="CXBC Search" aria-label="Google Search" name="btnK"
+                                   type="submit">
+                            <input class="RNmpXc" value="I'm Feeling Lucky" aria-label="I'm Feeling Lucky"
+                                   name="btnI" type="submit">
+                    </div>
 
                 </div>
             </table>
 
             {% if query %}
-                <h3>Results</h3>
+                <h3 id="result"> Results</h3>
 
                 {% for result in page.object_list %}
                     <p>
