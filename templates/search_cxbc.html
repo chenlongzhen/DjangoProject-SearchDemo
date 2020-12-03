@@ -71,7 +71,7 @@
                 <h3 id="result"> Results</h3>
 
                 {% for result in res_values %}
-                    <p>{{ result.value }}</p>
+                    <p>{{ result.key }}: {{ result.value }}</p>
                 {% empty %}
                     <p>No results found.</p>
                 {% endfor %}

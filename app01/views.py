@@ -6,28 +6,39 @@ from app01 import models
 import json,csv
 
 # Create your views here.
+# https://www.cnblogs.com/petrolero/p/9909985.html
+# https://www.cnblogs.com/lelezuimei/p/12199041.html
 def upload(request):
 
     if request.method == 'POST':
-        f = request.FILES.get('file')
+        f = request.FILES.get('data_file')
         file_type = f.name.split('.')[1]
         if file_type not in ['csv']:
             return render(request, 'upload.html', {'info': '导入失败 文件格式错误'})
 
-        reader = csv.reader(f)
-        count = 1
-        for line in reader:
-            key  = line[0]
-            value = line[1]
-            # 删除所有key=x的数据
-            ret = models.SearchDB.objects.filter(key=key)
-            if ret :
-                ret.delete()
+        with open('./tmp.csv', 'wb+') as destF:
+            for Fread in f.chunks():
+                destF.write(Fread)
 
-            # 将数据新增到数据库中
-            ret = models.SearchDB.objects.create(key=key, value=value)
-            print(ret, type(ret))
-            count += 1
+        models.SearchDB.objects.all().delete()
+        with open('./tmp.csv', 'r') as readf:
+            count = 1
+            for line in readf:
+                print(f"line: {line}")
+                segs = line.split(",")
+                if len(segs) != 2:
+                    continue
+                key  = segs[0].strip()
+                value = segs[1].strip()
+               # # 删除所有key=x的数据
+               # ret = models.SearchDB.objects.filter(key=key)
+               # if ret :
+               #     ret.delete()
+
+                # 将数据新增到数据库中
+                ret = models.SearchDB.objects.create(key=key, value=value)
+                print(ret, type(ret))
+                count += 1
 
         return render(request, 'upload.html', {'info': 'success', 'in_num': count})
 
@@ -102,7 +113,7 @@ def search_cxbc(request):
         #  完全匹配
         if ret:
             for res in ret:
-                res_values.append(res.value)
+                res_values.append(res)
             return render(request, 'search_cxbc.html', {'res_values': res_values})
 
         else:
@@ -123,9 +134,3 @@ def search_cxbc(request):
             return render(request, 'search_cxbc.html', {'res_values': res_values})
 
     return render(request, 'search_cxbc.html')
-
-
-
-
-
-
