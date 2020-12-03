@@ -12,13 +12,11 @@ class PublisherIndex(indexes.SearchIndex, indexes.Indexable):
     # text: 索引字段。document=True: 指定 该text为 索引字段。
     # use_template=True 指定 对表中的哪些字段进行关键词分析 建立索引文件。对字段的说明，是 放在一个文件中的。
     text = indexes.CharField(document=True, use_template=True)
-    # 其它字段
-    desc = indexes.CharField(model_attr='name')
 
     def get_model(self):
         # 返回 需要检索的 模型类
-        return models.Publisher
+        return models.SearchDB
 
     # 返回 数据。对该数据 建立索引。
     def index_queryset(self, using=None):
-        return self.get_model().objects.all()
+        return self.get_model().objects.all() # 对key字段建立索引

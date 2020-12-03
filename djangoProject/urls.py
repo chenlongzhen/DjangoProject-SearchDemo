@@ -22,9 +22,16 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^publisher_list/', views.publisher_list),
     url(r'^publisher_add/', views.publisher_add),
-    #url(r'^search/', include('haystack.urls')),
+
+    # haystack 全文检索
     url(r'^search/', include('haystack.urls')),
-    url(r'search/search/', views.search), # autocomplete jquery调用此url返回complete
-    url(r'^index/$', views.index),
-    url(r'index/search/', views.search)
+    # autocomplete jquery调用此路由返回complete
+    url(r'^search/search/', views.search),
+
+    # cxbc 搜索
+    url(r'search_cxbc/', views.search_cxbc),
+
+    #    url(r'^index/$', views.index),
+#    url(r'index/search/', views.search),
+    url(r'upload/', views.upload)
 ]

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+{% block main %}
+
+    <form action="." method="POST" enctype="multipart/form-data">
+        {#  {% csrf_token %}#}
+        <label>Upload data to mysql</label>
+        <input type="file" name="data_file">
+        <input type="submit" value="submit">
+    </form>
+
+    <p>info:{{ info }}</p>
+    <p>导入数据:{{ in_num }}</p>
+
+{% endblock main %}
+
+</body>
+</html>

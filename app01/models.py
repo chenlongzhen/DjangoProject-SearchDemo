@@ -1,8 +1,8 @@
 from django.db import models
 
 # Create your models here.
-class Publisher(models.Model):
-    name = models.TextField(max_length=1024)
-    key = models.TextField(max_length=1024, default='None')
+class SearchDB(models.Model):
+    key = models.TextField(max_length=1024)
+    value = models.TextField(max_length=1024)
 
 
