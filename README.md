@@ -14,8 +14,7 @@
 
 like this:
 
-![image](https://github.com/chenlongzhen/DjangoProject-SearchDemo/blob/master/readmepic/3.png)
-
+<img width="150" height="150" src="https://github.com/chenlongzhen/DjangoProject-SearchDemo/blob/master/readmepic/3.png"/>
 upload website:
 http://127.0.0.1:8000/upload/
 
@@ -25,9 +24,6 @@ http://127.0.0.1:8000/upload/
 
 http://127.0.0.1:8000/search_cxbc
 
-![image](https://github.com/chenlongzhen/DjangoProject-SearchDemo/blob/master/readmepic/1.png)
+<img width="150" height="150" src="https://github.com/chenlongzhen/DjangoProject-SearchDemo/blob/master/readmepic/1.png"/>
 
-![image](https://github.com/chenlongzhen/DjangoProject-SearchDemo/blob/master/readmepic/2.png)
-
-
-
+<img width="150" height="150" src="https://github.com/chenlongzhen/DjangoProject-SearchDemo/blob/master/readmepic/2.png"/>
