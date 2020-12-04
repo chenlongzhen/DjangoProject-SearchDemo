@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>XXBC 搜索</title>
+{#    加载静态路径#}
     {% load static %}
 
-    {#    <link href="{% static "plugins/bootstrap-3.3.7-dist/css/bootstrap.min(1).css" %}" rel="stylesheet">#}
+{#    链接外部样式表#}
     <link rel="stylesheet" href="/static/plugins/bootstrap-3.3.7-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/dsb.css">
+    <link rel="stylesheet" href="{% static "css/search.css" %}"  type="text/css"/>
+
+{#    按照标签路径加载脚本#}
     <script src="{% static "js/jquery-2.1.4.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
-
-    <link href="{% static "css/search.css" %}" rel="stylesheet" type="text/css"/>
 
     {#  autocomplete function  #}
     <script>

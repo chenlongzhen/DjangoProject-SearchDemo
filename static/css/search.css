@@ -1,3 +1,4 @@
+/*id*/
 #re {
     border: 1px solid #666666;
     border-top: none;
@@ -8,7 +9,7 @@
     list-style: none;
 }
 
-
+/*class*/
 .img_wrap {
     text-align: center; /*让div内部文字居中*/
     background-color: #fff;
@@ -33,7 +34,8 @@
     margin: 40px;
 }
 
-.button input[type="submit"], .gbqfba {
+/*class 是button input type  是submit*/
+.button input[type="submit"] {
     background-image: -webkit-linear-gradient(top, #f8f9fa, #f8f9fa);
     background-color: #f8f9fa;
     border: 1px solid #f8f9fa;
