@@ -24,6 +24,6 @@ http://127.0.0.1:8000/upload/
 
 http://127.0.0.1:8000/search_cxbc
 
-<img width="250" height="150" src="https://github.com/chenlongzhen/DjangoProject-SearchDemo/blob/master/readmepic/1.png"/>
+<img width="300" height="200" src="https://github.com/chenlongzhen/DjangoProject-SearchDemo/blob/master/readmepic/1.png"/>
 
-<img width="250" height="150" src="https://github.com/chenlongzhen/DjangoProject-SearchDemo/blob/master/readmepic/2.png"/>
+<img width="300" height="200" src="https://github.com/chenlongzhen/DjangoProject-SearchDemo/blob/master/readmepic/2.png"/>
