@@ -150,3 +150,13 @@ cython_debug/
 将删除 app01/migrations/__pycache__/
 将删除 app01/templatetags/__pycache__/
 将删除 djangoProject/__pycache__/
+
+*.csv
+
+/whoosh_index/_MAIN_99.toc
+/whoosh_index/MAIN_1jhsfj81ogzjs30h.seg
+/whoosh_index/MAIN_kwekkcaruc0qudv8.seg
+/whoosh_index/MAIN_qryle00b2oblbl5a.seg
+/whoosh_index/MAIN_s2uj3szyry9qs3pl.seg
+/whoosh_index/MAIN_WRITELOCK
+/whoosh_index/MAIN_xz2leo70ijmk7cs9.seg
