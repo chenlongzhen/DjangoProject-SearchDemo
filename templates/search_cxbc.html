@@ -37,6 +37,13 @@
         });
     </script>
 
+    {#    <script type="text/javascript"> function clearText(field) {#}
+    {#        if (field.value == '{{ default_value }}')#}
+    {#            field.value = '';#}
+    {#        else if (field.value == '')#}
+    {#            field.value = '{{ default_value }}';#}
+    {#    } </script>#}
+
 </head>
 <body>
 
@@ -52,7 +59,8 @@
             <table>
                 <div>
                     <div style="width: 584px; margin: 0 auto;">
-                        <input type="text" class="form-control" id="searchinput" name="q" list="re" value="default">
+                        <input type="text" class="form-control" id="searchinput" name="q" list="re"
+                               value="{{ default_value }}">
                     </div>
                     <datalist id="re">
                     </datalist>

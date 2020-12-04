@@ -40,7 +40,10 @@ def upload(request):
                 print(ret, type(ret))
                 count += 1
 
-        return render(request, 'upload.html', {'info': 'success', 'in_num': count})
+        ret = models.SearchDB.objects.all()
+        cases = ret[:min(30,len(ret))]
+
+        return render(request, 'upload.html', {'info': 'success', 'in_num': count, 'cases':cases})
 
     return render(request, 'upload.html')
 
@@ -92,7 +95,8 @@ def search(request):
             results = models.SearchDB.objects.filter(key__icontains=quer) # key字段
             json_list = []
             for re in results:
-                json_list.append(re.key) # key字段
+                if re.key not in json_list:
+                    json_list.append(re.key) # key字段
             print(f"auto: {json_list}")
             return HttpResponse(json.dumps(json_list,ensure_ascii=False))
 
@@ -114,7 +118,7 @@ def search_cxbc(request):
         if ret:
             for res in ret:
                 res_values.append(res)
-            return render(request, 'search_cxbc.html', {'res_values': res_values})
+            return render(request, 'search_cxbc.html', {'res_values': res_values, 'default_value': quer})
 
         else:
             # 无完全匹配时 使用contains
@@ -131,6 +135,8 @@ def search_cxbc(request):
                 values = models.SearchDB.objects.filter(key__icontains=res.key)  # key字段
                 res_values.extend(values[:3]) # 取前3个value
 
-            return render(request, 'search_cxbc.html', {'res_values': res_values})
+            return render(request, 'search_cxbc.html', {'res_values': res_values, 'default_value': quer})
+    # get
+    ret = models.SearchDB.objects.first()
 
-    return render(request, 'search_cxbc.html')
+    return render(request, 'search_cxbc.html', {'default_value': ret.key})
