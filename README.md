@@ -20,7 +20,7 @@ http://127.0.0.1:8000/upload/
 
 ---
 
-搜索页：
+main page：
 
 http://127.0.0.1:8000/search_cxbc
 
