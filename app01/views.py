@@ -88,7 +88,7 @@ def index(request):
 
 # auto complete
 def search(request):
-    print(f"in search auto")
+    #print(f"in search auto")
     if request.method == 'GET' and 's' in request.GET:
         quer = request.GET['s']
         if quer is not None:
@@ -97,7 +97,7 @@ def search(request):
             for re in results:
                 if re.key not in json_list:
                     json_list.append(re.key) # key字段
-            print(f"auto: {json_list}")
+            #print(f"auto: {json_list}")
             return HttpResponse(json.dumps(json_list,ensure_ascii=False))
 
 # cxbc 主搜索
