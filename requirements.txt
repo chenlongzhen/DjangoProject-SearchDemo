@@ -1,9 +1,3 @@
-asgiref @ file:///tmp/build/80754af9/asgiref_1605055780383/work
-certifi==2020.11.8
-Django @ file:///tmp/build/80754af9/django_1605066529526/work
-django-haystack==3.0
 jieba==0.42.1
-psycopg2 @ file:///opt/concourse/worker/volumes/live/c8a4b965-959f-4e6c-7792-4aa881d63c8d/volume/psycopg2_1594305121341/work
-pytz==2020.1
-sqlparse @ file:///tmp/build/80754af9/sqlparse_1602184451250/work
 Whoosh==2.7.4
+django==3.1.3

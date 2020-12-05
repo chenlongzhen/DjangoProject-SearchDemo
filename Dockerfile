@@ -1,0 +1,19 @@
+#基于的基础镜像
+FROM conda/miniconda3-centos7:latest
+
+# 创建 code 文件夹并将其设置为工作目录
+RUN mkdir /code
+
+#代码添加到code文件夹
+ADD ./ /code
+
+WORKDIR /code
+
+RUN conda install python=3.8.5
+# 安装支持
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+#对外暴露端口
+EXPOSE 80 8080 8000 5000
+
