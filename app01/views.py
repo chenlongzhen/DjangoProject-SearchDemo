@@ -88,7 +88,8 @@ def index(request):
 
 # auto complete
 def search(request):
-    #print(f"in search auto")
+    print(f"in search autocomplete")
+    max_len = 20
     if request.method == 'GET' and 's' in request.GET:
         quer = request.GET['s']
         if quer is not None:
@@ -98,44 +99,51 @@ def search(request):
                 if re.key not in json_list:
                     json_list.append(re.key) # key字段
             #print(f"auto: {json_list}")
-            return HttpResponse(json.dumps(json_list,ensure_ascii=False))
+            value = json_list[:min(max_len,len(json_list))]
+            return HttpResponse(json.dumps(value,ensure_ascii=False))
 
 # cxbc 主搜索
 def search_cxbc(request):
 
-    if request.method == 'GET' and 's' in request.GET: # 这没搞明白，和haystack 的search页面不同他不能通过url指向到search函数
-        return search(request)
+    max_len = 50
+   # if request.method == 'GET' and 's' in request.GET: # 这没搞明白，和haystack 的search页面不同他不能通过url指向到search函数
+   #     return search(request)
 
     if request.method == 'GET' and 'q' in request.GET:
         quer = request.GET['q']
-        res_values = []
         if quer is None:
             return render(request, 'search_cxbc.html')
 
         ret = models.SearchDB.objects.filter(key=quer)  # key字段
 
-        #  完全匹配
+        value = [] #  返回结果
+        #   1.完全匹配
+        key_temp = [] # 去重
+        res_values = []
         if ret:
             for res in ret:
                 res_values.append(res)
-            return render(request, 'search_cxbc.html', {'res_values': res_values, 'default_value': quer})
+            key_temp.append(quer)
+            value.extend(res_values)
+            #return render(request, 'search_cxbc.html', {'res_values': value, 'default_value': quer})
 
-        else:
-            # 无完全匹配时 使用contains
-            results = models.SearchDB.objects.filter(key__icontains=quer)  # key字段
-            json_list = []
-            results = list(set(results))
+        # 2. 模糊匹配 使用contains
+        results = models.SearchDB.objects.filter(key__icontains=quer)  # key字段
+        results = list(set(results))
 
-            # contains 匹配每个只取前3个
-            key_temp = [] # 去重
-            for res in results:
-                if res.key in key_temp:
-                    continue
-                key_temp.append(res.key)
-                values = models.SearchDB.objects.filter(key__icontains=res.key)  # key字段
-                res_values.extend(values[:3]) # 取前3个value
+        # 2.1 匹配每个只取前5个
+        res_values = []
+        for res in results:
+            if res.key in key_temp:
+                continue
+            key_temp.append(res.key)
+            values = models.SearchDB.objects.filter(key__icontains=res.key)  # key字段
+            res_values.extend(values[:5]) # 取前3个value
+        value.extend(res_values)
 
-            return render(request, 'search_cxbc.html', {'res_values': res_values, 'default_value': quer})
+        # 截断
+        value = value[:min(len(value),max_len)]
+        return render(request, 'search_cxbc.html', {'res_values': value, 'default_value': quer})
     # get
     ret = models.SearchDB.objects.first()
 
