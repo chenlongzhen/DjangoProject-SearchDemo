@@ -9,7 +9,7 @@ ADD ./ /code
 
 WORKDIR /code
 
-RUN conda install python=3.8.5
+RUN conda install python=3.6.6
 # 安装支持
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
