@@ -29,20 +29,17 @@
                 <div class="panel-body">
                 <!--post 请求 pub_name -->
                     <form class="form-horizontal" action="" method="post" novalidate>
-                        <div class="form-group {% if error %}has-error{% endif %}">
-                            <label for="inputEmail3" class="col-sm-2 control-label">出版社名称</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" name="pub_name" id="inputEmail3"
-                                       placeholder="请输入出版社名称">
-                                <span class="help-block">{{ error }}</span>
-                            </div>
+
+
+                        <div class="input-group">
+                            <span class="input-group-addon" id="basic-addon1">@</span>
+                            <input type="text" class="form-control" name = "key" placeholder="请输入key" aria-describedby="basic-addon1">
                         </div>
 
                         <div class="input-group">
                             <span class="input-group-addon" id="basic-addon1">@</span>
-                            <input type="text" class="form-control" name = "pub_name" placeholder="请输入出版社名称" aria-describedby="basic-addon1">
+                            <input type="text" class="form-control" name = "value" placeholder="请输入value" aria-describedby="basic-addon1">
                         </div>
-
 
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">

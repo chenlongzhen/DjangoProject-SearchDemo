@@ -4,5 +4,3 @@ from django.db import models
 class SearchDB(models.Model):
     key = models.TextField(max_length=1024)
     value = models.TextField(max_length=1024)
-
-

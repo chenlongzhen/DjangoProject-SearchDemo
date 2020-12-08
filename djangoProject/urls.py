@@ -20,11 +20,11 @@ from app01 import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^publisher_list/', views.publisher_list),
-    url(r'^publisher_add/', views.publisher_add),
+    url(r'^list/', views.db_list),
+    url(r'^add/', views.db_add),
 
     # haystack 全文检索
-    url(r'^search/', include('haystack.urls')),
+   # url(r'^search/', include('haystack.urls')),
     # autocomplete jquery调用此路由返回complete
     url(r'^search/search/', views.search),
 

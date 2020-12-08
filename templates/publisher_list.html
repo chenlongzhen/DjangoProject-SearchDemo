@@ -30,7 +30,7 @@
             {% block main %}
 
                 <h2 class="sub-header">出版社列表</h2>
-                <a class="btn btn-primary btn-sm" href="/publisher_add/">新增</a>
+                <a class="btn btn-primary btn-sm" href="/add/">新增</a>
 
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
@@ -46,8 +46,8 @@
                         {% for i in all_publishers %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ i.pk }}</td>
-                                <td>{{ i.name }}</td>
+                                <td>{{ i.key }}</td>
+                                <td>{{ i.value }}</td>
                                 <td>
                                     <a class="btn btn-danger btn-sm" href="/publisher_del/?pk={{ i.id }}">删除</a>
                                     <a class="btn btn-primary btn-sm" href="/publisher_edit/?pk={{ i.id }}">编辑</a>

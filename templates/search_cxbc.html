@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>XXBC 搜索</title>
-{#    加载静态路径#}
+    {#    加载静态路径#}
     {% load static %}
 
-{#    链接外部样式表#}
+    {#    链接外部样式表#}
     <link rel="stylesheet" href="/static/plugins/bootstrap-3.3.7-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/dsb.css">
-    <link rel="stylesheet" href="{% static "css/search.css" %}"  type="text/css"/>
+    <link rel="stylesheet" href="{% static "css/search.css" %}" type="text/css"/>
 
-{#    按照标签路径加载脚本#}
+    {#    按照标签路径加载脚本#}
     <script src="{% static "js/jquery-2.1.4.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
 
@@ -52,15 +52,11 @@
 
 {% block content %}
 
-    <div class="img_wrap" style="width: 584px;">
-
+    <div class="img_wrap">
         <img id="img" src="{% static "img/CXBC.png" %}">
-
-        <form method="get" action="." , autocomplete="off">
-
-            <table>
+        <form method="get" action="." autocomplete="off">
                 <div>
-                    <div style="width: 584px; margin: 0 auto;">
+                    <div style="width: 700px; margin: 0 auto;">
                         <input type="text" class="form-control" id="searchinput" name="q" list="re"
                                value="{{ default_value }}">
                     </div>
@@ -73,35 +69,76 @@
                         <input class="RNmpXc" value="I'm Feeling Lucky" aria-label="I'm Feeling Lucky"
                                name="btnI" type="submit">
                     </div>
-
                 </div>
-            </table>
+        </form>
 
-            {% if res_values %}
+        <div class="row">
+            {% if exact_result or fuzzy_result or  merge_e_f_result or bert_result %}
                 <h3 id="result"> Results</h3>
 
-                {% for result in res_values %}
-                    <p>{{ result.key }}: {{ result.value }}</p>
-                {% empty %}
-                    <p>No results found.</p>
-                {% endfor %}
+                <div class="col">
+                    <table class="table">
+                        <caption>精确结果</caption>
+                        <thead>
+                        <tr>
+                            <th>索引key</th>
+                            <th>召回结果</th>
+                        </tr>
+                        </thead>
+                        {% for result in exact_result %}
+                            <tr>
+                                <td>{{ result.key }}</td>
+                                <td>{{ result.value }}</td>
+                            </tr>
+                        {% endfor %}
 
-                {% if page.has_previous or page.has_next %}
-                    <div>
-                        {% if page.has_previous %}
-                            <a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo;
-                        Previous
-                        {% if page.has_previous %}</a>{% endif %}
-                        |
-                        {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}
-                        Next
-                        &raquo;{% if page.has_next %}</a>{% endif %}
-                    </div>
-                {% endif %}
+                    </table>
+                </div>
+                <div class="col">
+                    <table class="table">
+                        <caption>模糊结果</caption>
+                        <thead>
+                        <tr>
+                            <th>索引key</th>
+                            <th>召回结果</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for result in fuzzy_result %}
+                            <tr>
+                                <td>{{ result.key }}</td>
+                                <td>{{ result.value }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col">
+                    <table class="table">
+                        <caption>模型结果</caption>
+                        <thead>
+                        <tr>
+                            <th>索引key</th>
+                            <th>召回结果</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for result in bert_result %}
+                            <tr>
+                                <td>{{ result.key }}</td>
+                                <td>{{ result.value }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+
             {% else %}
                 {# Show some example queries to run, maybe query syntax, something else? #}
             {% endif %}
-        </form>
+        </div>
     </div>
 {% endblock %}
 
