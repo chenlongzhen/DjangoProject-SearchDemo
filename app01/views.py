@@ -2,6 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render, HttpResponse, redirect
+from django.db.models import Max,Min
 from app01 import models
 import json, csv, os
 
@@ -60,7 +61,9 @@ def upload(request):
             models.SearchDB.objects.bulk_create(bulk_list)
 
         # show some cases data
-        cases = models.SearchDB.objects.filter(id__lte=50)
+        result = models.SearchDB.objects.aggregate(Min('id'))
+        max_id = result.get('id__min', 100)
+        cases = models.SearchDB.objects.filter(id__lte=max_id+50)
 
         # bert 索引
         bert_index_.bertBuild()
