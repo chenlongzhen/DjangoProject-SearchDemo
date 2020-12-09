@@ -1,4 +1,4 @@
-#基于的基础镜像
+#基于的基础镜像 由于环境依赖问题，此文件仅做参考无法使用
 FROM conda/miniconda3-centos7:latest
 
 # 创建 code 文件夹并将其设置为工作目录
