@@ -55,8 +55,23 @@ class bert_index():
         :return:
         '''
         print(f"load corpus: {self.csvfile}")
+        questions = []
         with open(self.csvfile) as fp:
-            questions = [line.strip().split(',')[0] for line in fp if line.strip() != '']
+            for line in fp:
+                segs = line.strip().split(",")
+                if len(segs) != 2:
+                    print(f"error line: {line}")
+                    continue
+
+                key = segs[0]
+                value = segs[1]
+                if key == '' or value == '':
+                    print(f"error line: {line}")
+                    continue
+
+                if key not in questions:
+                    questions.append(key)
+
             print(f'some qs: {questions[:10]}')
             print(
                 '%d questions loaded, avg. len of %d' % (len(questions), np.mean([len(d.split()) for d in questions])))
@@ -94,9 +109,7 @@ class bert_index():
         :return:
         '''
         if self.annoy_service is None:
-            # load annoy
-            self.annoy_service = AnnoyIndex(self.vec_len, 'angular')
-            self.annoy_service.load(self.annoy_file_name)
+            return None
 
         with BertClient(ip='localhost', port=self.port, port_out=self.port_out) as bc:
 

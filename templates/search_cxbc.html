@@ -55,21 +55,21 @@
     <div class="img_wrap">
         <img id="img" src="{% static "img/CXBC.png" %}">
         <form method="get" action="." autocomplete="off">
-                <div>
-                    <div style="width: 700px; margin: 0 auto;">
-                        <input type="text" class="form-control" id="searchinput" name="q" list="re"
-                               value="{{ default_value }}">
-                    </div>
-                    <datalist id="re">
-                    </datalist>
-                    {# <input id="search_button" type="submit" value="Search"> #}
-                    <div class="button" type="submit" value="Search" style="text-align: center;">
-                        <input class="gNO89b" value="CXBC Search" aria-label="Google Search" name="btnK"
-                               type="submit">
-                        <input class="RNmpXc" value="I'm Feeling Lucky" aria-label="I'm Feeling Lucky"
-                               name="btnI" type="submit">
-                    </div>
+            <div>
+                <div style="width: 700px; margin: 0 auto;">
+                    <input type="text" class="form-control" id="searchinput" name="q" list="re"
+                           value="{{ default_value }}">
                 </div>
+                <datalist id="re">
+                </datalist>
+                {# <input id="search_button" type="submit" value="Search"> #}
+                <div class="button" type="submit" value="Search" style="text-align: center;">
+                    <input class="gNO89b" value="CXBC Search" aria-label="Google Search" name="btnK"
+                           type="submit">
+                    <input class="RNmpXc" value="I'm Feeling Lucky" aria-label="I'm Feeling Lucky"
+                           name="btnI" type="submit">
+                </div>
+            </div>
         </form>
 
         <div class="row">
@@ -133,6 +133,7 @@
 
                         </tbody>
                     </table>
+                    <p>{{ error_content }}</p>
                 </div>
 
             {% else %}

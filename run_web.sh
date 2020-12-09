@@ -1,5 +1,5 @@
 #!/bin/env bash
-source ~/.bashrc
+#source ~/.bashrc
 
 echo "启动web..."
 conda activate py3

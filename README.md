@@ -15,6 +15,7 @@ pip install bert-serving-client  # client, independent of `bert-serving-server`
 ```
 
 ### start bert service
+download [chinese_L-12_H-768_A-12](https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip) unzip to ./bert/ 
 ```python
 conda activate py3
 # bert server

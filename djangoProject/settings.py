@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'haystack',
+    #'haystack', # 全文检索，未使用
     'app01.apps.App01Config',
 ]
 
@@ -79,7 +79,8 @@ WSGI_APPLICATION = 'djangoProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'data/db.sqlite3'),
+
     }
 }
 
@@ -137,7 +138,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
 
-# 配置 全文检索框架(haystack)使用 检索引擎(whoosh)
+# 配置 全文检索框架(haystack)使用 检索引擎(whoosh) 未使用
 HAYSTACK_CONNECTIONS = {
     'default': {
         # 使用whoosh引擎
