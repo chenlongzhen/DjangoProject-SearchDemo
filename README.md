@@ -1,4 +1,7 @@
 # basic search engine based on bert-model and django
+1. 搜索补全
+2. 精确和模糊匹配
+3. bert模型召回
 
 ## usage 
 
