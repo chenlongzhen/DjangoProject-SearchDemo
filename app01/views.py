@@ -2,26 +2,38 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render, HttpResponse, redirect
-from django.db.models import Max,Min
+from django.db.models import Max, Min
 from app01 import models
 import json, csv, os
+from pypinyin import lazy_pinyin
 
 from app01 import bert_index
 
 os.makedirs('./data', exist_ok=True)
-corpus_file_name = './data/corpus.txt'
-bert_index_ = bert_index.bert_index(corpus_file_name)
-
+bert_index_ = bert_index.bert_index()
 
 # Create your views here.
 # https://www.cnblogs.com/petrolero/p/9909985.html
 # https://www.cnblogs.com/lelezuimei/p/12199041.html
-def upload(request):
+DB_DICT = {'basic': models.SearchDB, 'activity': models.ActivityDB, 'blackbox': models.BlackBoxDB}
+
+
+def upload(request, mode):
+    # 设置默认mode为basic
+    mode = 'basic' if mode not in DB_DICT.keys() else mode
+    # 匹配DB
+    DB = DB_DICT.get(mode, models.SearchDB)
+    # 文件名
+    corpus_file_name = os.path.join('data', mode)
+    # 文件宽度
+    # seg_len = 4 if mode == "activity" else 2
+    seg_len = 2
+
     if request.method == 'POST':
         f = request.FILES.get('data_file')
         file_type = f.name.split('.')[1]
         if file_type not in ['csv']:
-            return render(request, 'upload.html', {'info': '导入失败 文件格式错误'})
+            return render(request, 'upload_basic.html', {'info': '导入失败 文件格式错误'})
 
         # upload 数据存入文件
         with open(corpus_file_name, 'wb+') as destF:
@@ -29,7 +41,7 @@ def upload(request):
                 destF.write(Fread)
 
         # 删除数据库
-        models.SearchDB.objects.all().delete()
+        DB.objects.all().delete()
 
         # 导入到数据库中
         bulk_list = []
@@ -37,7 +49,7 @@ def upload(request):
             count = 1
             for line in readf:
                 segs = line.strip().split(",")
-                if len(segs) != 2:
+                if len(segs) != seg_len:
                     print(f"error line: {line}")
                     continue
 
@@ -47,6 +59,9 @@ def upload(request):
                     print(f"error line: {line}")
                     continue
 
+                # 拼音转换
+                key_pinyin = "".join(lazy_pinyin(key))
+
                 # # 删除所有key=x的数据
                 # ret = models.SearchDB.objects.filter(key=key)
                 # if ret :
@@ -55,22 +70,27 @@ def upload(request):
                 # 将数据新增到数据库中
                 # ret = models.SearchDB.objects.create(key=key, value=value)
                 # bulk input
-                bulk_list.append(models.SearchDB(key=key,value=value))
+                temp_DB = DB(key=key, value=value, key_pinyin=key_pinyin)
+#                # 活动四个字段
+#                if mode == 'activity':
+#                    temp_DB = DB(key=key, value=value, key_pinyin=key_pinyin, st_dt=segs[2], ed_dt=segs[3])
+
+                bulk_list.append(temp_DB)
                 count += 1
 
-            models.SearchDB.objects.bulk_create(bulk_list)
+            DB.objects.bulk_create(bulk_list)
 
         # show some cases data
-        result = models.SearchDB.objects.aggregate(Min('id'))
+        result = DB.objects.aggregate(Min('id'))
         max_id = result.get('id__min', 100)
-        cases = models.SearchDB.objects.filter(id__lte=max_id+50)
+        cases = DB.objects.filter(id__lte=max_id + 50)
 
         # bert 索引
-        bert_index_.bertBuild()
+        bert_index_.bertBuild(corpus_file_name)
 
-        return render(request, 'upload.html', {'info': 'success', 'in_num': count, 'cases': cases})
+        return render(request, f'upload_{mode}.html', {'info': 'success', 'in_num': count, 'cases': cases})
 
-    return render(request, 'upload.html')
+    return render(request, f'upload_{mode}.html')
 
 
 def db_list(request):
@@ -122,14 +142,35 @@ def search(request):
     max_len = 20
     if request.method == 'GET' and 's' in request.GET:
         quer = request.GET['s']
-        if quer is not None:
-            results = models.SearchDB.objects.filter(key__icontains=quer)  # key字段
+        if quer == '' or quer is None:
+            return HttpResponse(json.dumps([], ensure_ascii=False))
+
+        results = models.SearchDB.objects.filter(
+            key__icontains=quer)  # key字段
+        # 文字 有包含结果
+        if len(results) != 0:
+
             json_list = []
             for re in results:
                 if re.key not in json_list:
                     json_list.append(re.key)  # key字段
+
             # print(f"auto: {json_list}")
             value = json_list[:min(max_len, len(json_list))]
+            print(f"auto complete1: {value}")
+            return HttpResponse(json.dumps(value, ensure_ascii=False))
+        # 文字 无包含结果
+        else:
+            results = models.SearchDB.objects.filter(
+                key_pinyin__icontains="".join(lazy_pinyin(quer)))  # key字段
+            json_list = []
+            for re in results:
+                if re.key not in json_list:
+                    json_list.append(re.key)  # key字段
+
+            # print(f"auto: {json_list}")
+            value = json_list[:min(max_len, len(json_list))]
+            print(f"auto complete2: {value}")
             return HttpResponse(json.dumps(value, ensure_ascii=False))
 
 
@@ -142,7 +183,7 @@ def search_cxbc(request):
     if request.method == 'GET' and 'q' in request.GET:
         error_content = ''
         quer = request.GET['q']
-        if quer is None:
+        if quer is None or quer == '':
             return render(request, 'search_cxbc.html')
 
         ret = models.SearchDB.objects.filter(key=quer)  # key字段
@@ -168,7 +209,23 @@ def search_cxbc(request):
             values = models.SearchDB.objects.filter(key__icontains=res.key)  # key字段
             fuzzy_values.extend(values[:5])  # 取前5个value
 
+        # 2.2 模糊匹配 使用拼音
+        results = models.SearchDB.objects.filter(
+            key_pinyin__icontains="".join(lazy_pinyin(quer)))  # key字段
+
+        results = list(set(results))
+        for res in results:
+            if res.key in key_temp:
+                continue
+            key_temp.append(res.key)
+            values = models.SearchDB.objects.filter(key__icontains=res.key)  # key字段
+            fuzzy_values.extend(values[:5])  # 取前5个value
+
         # 3 bert
+        ##  判断是否全是拼音，如果是就是用fuzzy的第一个结果返回bert
+        # if quer.isalpha() and len(fuzzy_values)>0:
+        #    quer = fuzzy_values[0].key
+
         bert_values = []  # bert 结果
         sim_keys = bert_index_.bertQuery(quer)
         if sim_keys is not None:

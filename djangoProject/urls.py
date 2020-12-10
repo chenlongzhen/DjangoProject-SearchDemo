@@ -30,10 +30,10 @@ urlpatterns = [
 
     # cxbc 搜索
     url(r'search_cxbc/', views.search_cxbc),
-    url(r'auto_complete/', views.search),
+    #url(r'auto_complete/', views.search),
     url(r'^$', views.search_cxbc),
 
     #url(r'^index/$', views.index),
     #url(r'index/search/', views.search),
-    url(r'upload/', views.upload)
+    path(r'upload/<slug:mode>/', views.upload),
 ]

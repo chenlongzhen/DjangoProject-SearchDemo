@@ -13,8 +13,7 @@ from annoy import AnnoyIndex
 
 class bert_index():
 
-    def __init__(self, csvfile):
-        self.csvfile = csvfile
+    def __init__(self):
         self.topk = 5
         self.annoy_file_name = 'annoy.index'
         self.id2que = None
@@ -49,14 +48,14 @@ class bert_index():
             que_list.append(id2que[i])
         return que_list
 
-    def _load(self):
+    def _load(self,input_file):
         '''
 
         :return:
         '''
-        print(f"load corpus: {self.csvfile}")
+        print(f"load corpus: {input_file}")
         questions = []
-        with open(self.csvfile) as fp:
+        with open(input_file) as fp:
             for line in fp:
                 segs = line.strip().split(",")
                 if len(segs) != 2:
@@ -79,7 +78,7 @@ class bert_index():
             # id 2 que dict
             self.id2que = dict(zip(range(0, len(questions)), questions))
         self.questions = questions
-        print(f"load corpus: {self.csvfile} done!")
+        print(f"load corpus: {input_file} done!")
 
     def _BuilQuesEmbIndex(self):
         '''
@@ -91,12 +90,12 @@ class bert_index():
         self._build_annoy(doc_vecs)
         print(f"_BuilQuesEmbIndex done")
 
-    def bertBuild(self):
+    def bertBuild(self, input_file):
         '''
 
         :return:
         '''
-        self._load()
+        self._load(input_file)
         self._BuilQuesEmbIndex()
 
         # load to annoy

@@ -8,7 +8,7 @@
 
 
 {% block main %}
-
+    <p>上传blackbox</p>
     <form action="." method="POST" enctype="multipart/form-data">
         {#  {% csrf_token %}#}
         <label>Upload data to mysql</label>
@@ -28,6 +28,8 @@
         <p>No results found.</p>
     {% endfor %}
 
+    <a href="/upload/activity/">上传活动</a>
+    <a href="/upload/blackbox/">上传blackbox</a>
     <a href="/search_cxbc/">去搜索页面</a>
 
 {% endblock main %}
