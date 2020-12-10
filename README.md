@@ -1,4 +1,4 @@
-# django search basic demo 
+# basic search engine based on bert-model and django
 
 ## usage 
 
