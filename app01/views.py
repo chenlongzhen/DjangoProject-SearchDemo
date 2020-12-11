@@ -8,23 +8,30 @@ import json, csv, os
 from pypinyin import lazy_pinyin
 
 from app01 import bert_index
+from app01 import searchStrategy
+
+from app01.CONSTANTS import *
 
 os.makedirs('./data', exist_ok=True)
-bert_index_ = bert_index.bert_index()
 
 # Create your views here.
 # https://www.cnblogs.com/petrolero/p/9909985.html
 # https://www.cnblogs.com/lelezuimei/p/12199041.html
-DB_DICT = {'basic': models.SearchDB, 'activity': models.ActivityDB, 'blackbox': models.BlackBoxDB}
+
+
+DB_DICT = {BASIC: models.SearchDB, ACTIVITY: models.ActivityDB, BLACKBOX: models.BlackBoxDB}
+BERT_INDEX_DICT = {BASIC: bert_index.bert_index(BASIC),
+                   ACTIVITY: bert_index.bert_index(ACTIVITY),
+                   BLACKBOX: bert_index.bert_index(BLACKBOX)}
 
 
 def upload(request, mode):
     # 设置默认mode为basic
-    mode = 'basic' if mode not in DB_DICT.keys() else mode
+    mode = BASIC if mode not in DB_DICT.keys() else mode
     # 匹配DB
     DB = DB_DICT.get(mode, models.SearchDB)
-    # 文件名
-    corpus_file_name = os.path.join('data', mode)
+    # 匹配bert index
+    BERT_INDEX = BERT_INDEX_DICT.get(mode, bert_index.bert_index(BASIC))
     # 文件宽度
     # seg_len = 4 if mode == "activity" else 2
     seg_len = 2
@@ -36,7 +43,7 @@ def upload(request, mode):
             return render(request, 'upload_basic.html', {'info': '导入失败 文件格式错误'})
 
         # upload 数据存入文件
-        with open(corpus_file_name, 'wb+') as destF:
+        with open(BERT_INDEX.corpus_file_name, 'wb+') as destF:
             for Fread in f.chunks():
                 destF.write(Fread)
 
@@ -45,7 +52,7 @@ def upload(request, mode):
 
         # 导入到数据库中
         bulk_list = []
-        with open(corpus_file_name, 'r') as readf:
+        with open(BERT_INDEX.corpus_file_name, 'r') as readf:
             count = 1
             for line in readf:
                 segs = line.strip().split(",")
@@ -71,9 +78,9 @@ def upload(request, mode):
                 # ret = models.SearchDB.objects.create(key=key, value=value)
                 # bulk input
                 temp_DB = DB(key=key, value=value, key_pinyin=key_pinyin)
-#                # 活动四个字段
-#                if mode == 'activity':
-#                    temp_DB = DB(key=key, value=value, key_pinyin=key_pinyin, st_dt=segs[2], ed_dt=segs[3])
+                #                # 活动四个字段
+                #                if mode == 'activity':
+                #                    temp_DB = DB(key=key, value=value, key_pinyin=key_pinyin, st_dt=segs[2], ed_dt=segs[3])
 
                 bulk_list.append(temp_DB)
                 count += 1
@@ -86,7 +93,7 @@ def upload(request, mode):
         cases = DB.objects.filter(id__lte=max_id + 50)
 
         # bert 索引
-        bert_index_.bertBuild(corpus_file_name)
+        BERT_INDEX.bertBuild()
 
         return render(request, f'upload_{mode}.html', {'info': 'success', 'in_num': count, 'cases': cases})
 
@@ -131,13 +138,12 @@ def db_add(request):
     return render(request, 'publisher_add.html')
 
 
-# search autocomplete
-def index(request):
-    return render(request, "searchresult.html")
-
-
-# auto completue
 def search(request):
+    '''
+    # auto completue
+    :param request:
+    :return:
+    '''
     print(f"in search autocomplete")
     max_len = 20
     if request.method == 'GET' and 's' in request.GET:
@@ -176,75 +182,33 @@ def search(request):
 
 # cxbc 主搜索
 def search_cxbc(request):
-    max_len = 50
-    if request.method == 'GET' and 's' in request.GET:  # 这没搞明白， 没有haystack wooshs时候进入的是这里
+    if request.method == 'GET' and 's' in request.GET:  # 没有haystack wooshs时候进入的是这里
         return search(request)
 
     if request.method == 'GET' and 'q' in request.GET:
-        error_content = ''
         quer = request.GET['q']
         if quer is None or quer == '':
             return render(request, 'search_cxbc.html')
 
-        ret = models.SearchDB.objects.filter(key=quer)  # key字段
-        #   1.完全匹配
-        key_temp = []  # 去重
-        exact_values = []  # 精确结果
-        if ret:
-            for res in ret:
-                exact_values.append(res)
-            key_temp.append(quer)
-            # return render(request, 'search_cxbc.html', {'res_values': value, 'default_value': quer})
+        res_dict_basic = searchStrategy._search(request,
+                                                DB_DICT.get(BASIC),
+                                                BERT_INDEX_DICT.get(BASIC),
+                                                BASIC)
 
-        # 2. 模糊匹配 使用contains
-        results = models.SearchDB.objects.filter(key__icontains=quer)  # key字段
-        results = list(set(results))
+        res_dict_activity = searchStrategy._search(request,
+                                                   DB_DICT.get(ACTIVITY),
+                                                   BERT_INDEX_DICT.get(ACTIVITY),
+                                                   ACTIVITY)
 
-        ## 2.1 匹配每个只取前5个
-        fuzzy_values = []  # 模糊结果
-        for res in results:
-            if res.key in key_temp:
-                continue
-            key_temp.append(res.key)
-            values = models.SearchDB.objects.filter(key__icontains=res.key)  # key字段
-            fuzzy_values.extend(values[:5])  # 取前5个value
+        res_dict_blackbox = searchStrategy._search(request,
+                                                   DB_DICT.get(BLACKBOX),
+                                                   BERT_INDEX_DICT.get(BLACKBOX),
+                                                   BLACKBOX)
 
-        # 2.2 模糊匹配 使用拼音
-        results = models.SearchDB.objects.filter(
-            key_pinyin__icontains="".join(lazy_pinyin(quer)))  # key字段
+        res_dict_basic.update(res_dict_activity)
+        res_dict_basic.update(res_dict_blackbox)
+        return render(request, 'search_cxbc.html', res_dict_basic)
 
-        results = list(set(results))
-        for res in results:
-            if res.key in key_temp:
-                continue
-            key_temp.append(res.key)
-            values = models.SearchDB.objects.filter(key__icontains=res.key)  # key字段
-            fuzzy_values.extend(values[:5])  # 取前5个value
-
-        # 3 bert
-        ##  判断是否全是拼音，如果是就是用fuzzy的第一个结果返回bert
-        # if quer.isalpha() and len(fuzzy_values)>0:
-        #    quer = fuzzy_values[0].key
-
-        bert_values = []  # bert 结果
-        sim_keys = bert_index_.bertQuery(quer)
-        if sim_keys is not None:
-            for sim_key in sim_keys:
-                ret = models.SearchDB.objects.filter(key=sim_key)  # key字段
-                bert_values.extend(ret[:5])
-        else:
-            error_content = 'bert模型数据未进行索引，请在upload页面上传相应类型数据！'
-
-        # 合并结果
-        # 截断
-        return render(request, 'search_cxbc.html',
-                      {'default_value': quer,
-                       'exact_result': exact_values[:max_len],
-                       'fuzzy_result': fuzzy_values[:max_len],
-                       'merge_e_f_result': (exact_values + fuzzy_values)[:max_len],
-                       'bert_result': bert_values[:max_len],
-                       'error_content': error_content
-                       })
     # get
     ret = models.SearchDB.objects.first()
 

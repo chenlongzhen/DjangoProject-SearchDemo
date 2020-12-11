@@ -74,8 +74,8 @@
         </form>
 
         <div class="row">
-            {% if exact_result or fuzzy_result or  merge_e_f_result or bert_result %}
-                <h3 id="result"> Results</h3>
+            {% if exact_result_basic or fuzzy_result_basic or bert_result_basic %}
+                <h3 id="result"> basic Results</h3>
 
                 <div class="col">
                     <table class="table">
@@ -86,7 +86,7 @@
                             <th>召回结果</th>
                         </tr>
                         </thead>
-                        {% for result in exact_result %}
+                        {% for result in exact_result_basic %}
                             <tr>
                                 <td>{{ result.key }}</td>
                                 <td>{{ result.value }}</td>
@@ -105,7 +105,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for result in fuzzy_result %}
+                        {% for result in fuzzy_result_basic %}
                             <tr>
                                 <td>{{ result.key }}</td>
                                 <td>{{ result.value }}</td>
@@ -125,7 +125,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for result in bert_result %}
+                        {% for result in bert_result_basic %}
                             <tr>
                                 <td>{{ result.key }}</td>
                                 <td>{{ result.value }}</td>
@@ -141,6 +141,145 @@
                 {# Show some example queries to run, maybe query syntax, something else? #}
             {% endif %}
         </div>
+
+        <div class="row">
+            {% if exact_result_activity or fuzzy_result_activity or bert_result_activity %}
+                <h3 id="result"> activity Results</h3>
+
+                <div class="col">
+                    <table class="table">
+                        <caption>精确结果</caption>
+                        <thead>
+                        <tr>
+                            <th>索引key</th>
+                            <th>召回结果</th>
+                        </tr>
+                        </thead>
+                        {% for result in exact_result_activity %}
+                            <tr>
+                                <td>{{ result.key }}</td>
+                                <td>{{ result.value }}</td>
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+                </div>
+                <div class="col">
+                    <table class="table">
+                        <caption>模糊结果</caption>
+                        <thead>
+                        <tr>
+                            <th>索引key</th>
+                            <th>召回结果</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for result in fuzzy_result_activity %}
+                            <tr>
+                                <td>{{ result.key }}</td>
+                                <td>{{ result.value }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col">
+                    <table class="table">
+                        <caption>模型结果</caption>
+                        <thead>
+                        <tr>
+                            <th>索引key</th>
+                            <th>召回结果</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for result in bert_result_activity %}
+                            <tr>
+                                <td>{{ result.key }}</td>
+                                <td>{{ result.value }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                    <p>{{ error_content }}</p>
+                </div>
+
+            {% else %}
+                {# Show some example queries to run, maybe query syntax, something else? #}
+            {% endif %}
+        </div>
+
+        <div class="row">
+            {% if exact_result_blackbox or fuzzy_result_blackbox or  bert_result_blackbox %}
+                <h3 id="result"> black box Results</h3>
+
+                <div class="col">
+                    <table class="table">
+                        <caption>精确结果</caption>
+                        <thead>
+                        <tr>
+                            <th>索引key</th>
+                            <th>召回结果</th>
+                        </tr>
+                        </thead>
+                        {% for result in exact_result_blackbox %}
+                            <tr>
+                                <td>{{ result.key }}</td>
+                                <td>{{ result.value }}</td>
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+                </div>
+                <div class="col">
+                    <table class="table">
+                        <caption>模糊结果</caption>
+                        <thead>
+                        <tr>
+                            <th>索引key</th>
+                            <th>召回结果</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for result in fuzzy_result_blackbox %}
+                            <tr>
+                                <td>{{ result.key }}</td>
+                                <td>{{ result.value }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col">
+                    <table class="table">
+                        <caption>模型结果</caption>
+                        <thead>
+                        <tr>
+                            <th>索引key</th>
+                            <th>召回结果</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for result in bert_result_blackbox %}
+                            <tr>
+                                <td>{{ result.key }}</td>
+                                <td>{{ result.value }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                    <p>{{ error_content }}</p>
+                </div>
+
+            {% else %}
+                {# Show some example queries to run, maybe query syntax, something else? #}
+            {% endif %}
+        </div>
+
     </div>
 {% endblock %}
 

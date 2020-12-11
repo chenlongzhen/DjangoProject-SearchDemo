@@ -9,24 +9,27 @@ import numpy as np
 from bert_serving.client import BertClient
 from termcolor import colored
 from annoy import AnnoyIndex
+import os
 
 
 class bert_index():
 
-    def __init__(self):
-        self.topk = 5
-        self.annoy_file_name = 'annoy.index'
+    def __init__(self, file_name, topk = 5, port = 4000, port_out = 4001):
+        self.topk = topk
+        self.corpus_file_name =  os.path.join('data', file_name+ "_corpus")
+        self.annoy_file_name = os.path.join('data' ,file_name + "_annoy")
         self.id2que = None
         self.vec_len = None
-        self.port = 4000
-        self.port_out = 4001
+        self.port = port
+        self.port_out = port_out
         self.questions = None
         self.annoy_service = None
+        print(f"build index: { self.corpus_file_name} {self.annoy_file_name}")
 
-    def _build_annoy(self, vecs):
+    def _build_annoy(self, vecs, annoy_file_name):
         '''
         '''
-        print(f'build index...')
+        print(f'build index... { self.corpus_file_name} {self.annoy_file_name}')
         # vec len
         f = len(vecs[0])
         self.vec_len = f
@@ -36,7 +39,7 @@ class bert_index():
             t.add_item(i, vec)
 
         t.build(10)  # 10 trees
-        t.save(self.annoy_file_name)
+        t.save(annoy_file_name)
         print(f'build done!')
         return f
 
@@ -48,14 +51,14 @@ class bert_index():
             que_list.append(id2que[i])
         return que_list
 
-    def _load(self,input_file):
+    def _load(self):
         '''
 
         :return:
         '''
-        print(f"load corpus: {input_file}")
+        print(f"load corpus: {self.corpus_file_name}")
         questions = []
-        with open(input_file) as fp:
+        with open(self.corpus_file_name) as fp:
             for line in fp:
                 segs = line.strip().split(",")
                 if len(segs) != 2:
@@ -78,7 +81,7 @@ class bert_index():
             # id 2 que dict
             self.id2que = dict(zip(range(0, len(questions)), questions))
         self.questions = questions
-        print(f"load corpus: {input_file} done!")
+        print(f"load corpus: {self.corpus_file_name} done!")
 
     def _BuilQuesEmbIndex(self):
         '''
@@ -87,15 +90,15 @@ class bert_index():
         print(f"_BuilQuesEmbIndex")
         with BertClient(ip='localhost', port=self.port, port_out=self.port_out) as bc:
             doc_vecs = bc.encode(self.questions)
-        self._build_annoy(doc_vecs)
+        self._build_annoy(doc_vecs, self.annoy_file_name)
         print(f"_BuilQuesEmbIndex done")
 
-    def bertBuild(self, input_file):
+    def bertBuild(self):
         '''
 
         :return:
         '''
-        self._load(input_file)
+        self._load()
         self._BuilQuesEmbIndex()
 
         # load to annoy
@@ -108,7 +111,7 @@ class bert_index():
         :return:
         '''
         if self.annoy_service is None:
-            return None
+            self.bertBuild()
 
         with BertClient(ip='localhost', port=self.port, port_out=self.port_out) as bc:
 
