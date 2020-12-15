@@ -19,10 +19,19 @@ os.makedirs('./data', exist_ok=True)
 # https://www.cnblogs.com/lelezuimei/p/12199041.html
 
 
-DB_DICT = {BASIC: models.SearchDB, ACTIVITY: models.ActivityDB, BLACKBOX: models.BlackBoxDB}
-BERT_INDEX_DICT = {BASIC: bert_index.bert_index(BASIC),
-                   ACTIVITY: bert_index.bert_index(ACTIVITY),
-                   BLACKBOX: bert_index.bert_index(BLACKBOX)}
+DB_DICT = {
+    BASIC: models.SearchDB,
+    ACTIVITY: models.ActivityDB,
+    BLACKBOX: models.BlackBoxDB,
+    SEARCH: models.Search2SearchDB
+}
+
+BERT_INDEX_DICT = {
+    BASIC: bert_index.bert_index(BASIC),
+    ACTIVITY: bert_index.bert_index(ACTIVITY),
+    BLACKBOX: bert_index.bert_index(BLACKBOX),
+    SEARCH: bert_index.bert_index(SEARCH)
+}
 
 
 def upload(request, mode):
@@ -205,8 +214,18 @@ def search_cxbc(request):
                                                    BERT_INDEX_DICT.get(BLACKBOX),
                                                    BLACKBOX)
 
+        res_dict_search = searchStrategy._search(request,
+                                                   DB_DICT.get(SEARCH),
+                                                   BERT_INDEX_DICT.get(SEARCH),
+                                                   SEARCH)
+
         res_dict_basic.update(res_dict_activity)
         res_dict_basic.update(res_dict_blackbox)
+        res_dict_basic.update(res_dict_search)
+
+        # 策略合并
+        res_dict_basic = searchStrategy._merge_strategy(res_dict_basic)
+
         return render(request, 'search_cxbc.html', res_dict_basic)
 
     # get

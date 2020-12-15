@@ -3,7 +3,7 @@ from django.db.models import Max, Min
 from app01 import models
 import json, csv, os
 from pypinyin import lazy_pinyin
-
+from app01.CONSTANTS import *
 
 def _search(request, DB, bert_index_, fix_name):
 
@@ -72,3 +72,88 @@ def _search(request, DB, bert_index_, fix_name):
                    f'error_content_{fix_name}': error_content
                    }
 
+def _merge_strategy(res_dict):
+    '''
+    结果合并：
+        1.黑名单
+        2. 精确匹配结果 + 模糊匹配结果
+        3. 模型结果补充
+        4. 取top 20 个
+    '''
+    #  搜索结果合并
+    merge_result = []
+
+    # black box
+    black_exact_values = res_dict.get(f'exact_result_{BLACKBOX}')
+    black_fuzzy_values = res_dict.get(f'fuzzy_result_{BLACKBOX}')
+
+    # basic
+    basic_exact_values = res_dict.get(f'exact_result_{BASIC}')
+    basic_fuzzy_values = res_dict.get(f'fuzzy_result_{BASIC}')
+    basic_model_values = res_dict.get(f'bert_result_{BASIC}')
+
+    # activity
+    activity_exact_values = res_dict.get(f'exact_result_{ACTIVITY}')
+    activity_fuzzy_values = res_dict.get(f'fuzzy_result_{ACTIVITY}')
+    activity_model_values = res_dict.get(f'bert_result_{ACTIVITY}')
+
+    activity_result = []
+    activity_result.extend(activity_exact_values)
+    activity_result.extend(activity_fuzzy_values)
+    activity_result.extend(activity_model_values)
+
+    # search
+    search_exact_values = res_dict.get(f'exact_result_{SEARCH}')
+    search_fuzzy_values = res_dict.get(f'fuzzy_result_{SEARCH}')
+    search_model_values = res_dict.get(f'bert_result_{SEARCH}')
+
+    search_result = []
+    search_result.extend(search_exact_values)
+    search_result.extend(search_fuzzy_values)
+    search_result.extend(search_model_values)
+    search_result =  search_result[:5] #取5个结果
+
+    # 有黑名单就加黑名单 没有加 basic
+    if len(black_exact_values) > 0:
+        merge_result.extend(black_exact_values)
+    elif len(black_fuzzy_values) > 0:
+        merge_result.extend(black_fuzzy_values)
+    elif len(basic_exact_values) > 0:
+        merge_result.extend(basic_exact_values)
+        merge_result.extend(basic_fuzzy_values)
+        merge_result.extend(basic_model_values)
+
+    # 去重
+    dup_set = []
+    merge_result_dup = []
+    count = 0
+    max_result = 20
+    for res in merge_result:
+        if count >= max_result:
+            break
+        if res.value not in dup_set:
+            merge_result_dup.append(res)
+            dup_set.append(res.value)
+            count += 1
+
+    # activity
+    dup_set = []
+    activity_result_dup = []
+    count = 0
+    max_result = 20
+    for res in activity_result:
+        if count >= max_result:
+            break
+        if res.value not in dup_set:
+            activity_result_dup.append(res)
+            dup_set.append(res.value)
+            count += 1
+
+    new_dict = {
+        'merge_result_dup': merge_result_dup,
+        'activity_result_dup': activity_result_dup,
+        'merge_search_result': search_result
+    }
+
+    res_dict.update(new_dict)
+    return res_dict

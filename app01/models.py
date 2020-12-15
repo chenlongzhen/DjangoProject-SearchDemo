@@ -18,3 +18,8 @@ class BlackBoxDB(models.Model):
     key = models.TextField(max_length=1024)
     key_pinyin = models.TextField(max_length=1024, default='')
     value = models.TextField(max_length=1024)
+
+class Search2SearchDB(models.Model):
+    key = models.TextField(max_length=1024)
+    key_pinyin = models.TextField(max_length=1024, default='')
+    value = models.TextField(max_length=1024)

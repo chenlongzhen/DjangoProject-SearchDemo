@@ -1,5 +1,5 @@
 #!/bin/env bash
-source ~/.bashrc
+#source ~/.bashrc
 
 ps -a | grep  "bert-serv"
 echo "如果已经有相同服务启动请手动kill再重新启动"
