@@ -60,13 +60,13 @@ class bert_index():
         questions = []
         with open(self.corpus_file_name) as fp:
             for line in fp:
-                segs = line.strip().split(",")
+                segs = line.strip().split("[SEP]",1)
                 if len(segs) != 2:
                     print(f"error line: {line}")
                     continue
 
                 key = segs[0]
-                value = segs[1]
+                value = segs[1].replace('[SEP]', ' ')
                 if key == '' or value == '':
                     print(f"error line: {line}")
                     continue

@@ -65,6 +65,7 @@ def upload(request, mode):
             count = 1
             for line in readf:
                 segs = line.strip().split("[SEP]", 1)
+                print(segs)
                 if len(segs) < 2:
                     print(f"error line: {line}")
                     continue
