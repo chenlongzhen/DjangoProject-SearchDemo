@@ -70,7 +70,7 @@ def upload(request, mode):
                     continue
 
                 key = segs[0]
-                value = segs[1]
+                value = segs[1].replace('[SEP]', ' ')
                 if key == '' or value == '':
                     print(f"error line: {line}")
                     continue
