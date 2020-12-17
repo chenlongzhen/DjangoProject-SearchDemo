@@ -19,15 +19,15 @@ class bert_index():
         self.corpus_file_name =  os.path.join('data', file_name+ "_corpus")
         self.annoy_file_name = os.path.join('data' ,file_name + "_annoy")
         self.id2que = None
-        self.vec_len = None
+        self.vec_len = 768 #任务重启时默认设置为768, 如果换长度了需要重复
         self.port = port
         self.port_out = port_out
         self.questions = None
         self.annoy_service = None
-        print(f"build index: { self.corpus_file_name} {self.annoy_file_name}")
 
     def _build_annoy(self, vecs, annoy_file_name):
         '''
+
         '''
         print(f'build index... { self.corpus_file_name} {self.annoy_file_name}')
         # vec len
@@ -91,13 +91,15 @@ class bert_index():
         self._build_annoy(doc_vecs, self.annoy_file_name)
         print(f"_BuilQuesEmbIndex done")
 
-    def bertBuild(self):
+    def bertBuild(self, only_annoy = False):
         '''
 
         :return:
         '''
         self._load()
-        self._BuilQuesEmbIndex()
+        # 如果annoy文件已有加载已有的不用重新bert build
+        if not only_annoy:
+            self._BuilQuesEmbIndex()
 
         # load to annoy
         self.annoy_service = AnnoyIndex(self.vec_len, 'angular')
@@ -109,7 +111,12 @@ class bert_index():
         :return:
         '''
         if self.annoy_service is None:
-            self.bertBuild()
+            if os.path.isfile(self.annoy_file_name):
+                print(f"====annoy file exists loading...")
+                self.bertBuild(False)
+            else:
+                print(f"====annoy file not exists building...")
+                self.bertBuild()
 
         with BertClient(ip='localhost', port=self.port, port_out=self.port_out) as bc:
 
