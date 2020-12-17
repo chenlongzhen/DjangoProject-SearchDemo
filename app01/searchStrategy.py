@@ -2,17 +2,51 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.db.models import Max, Min
 from app01 import models
 import json, csv, os
+import jieba
 from pypinyin import lazy_pinyin
 from app01.CONSTANTS import *
 
-def _search(request, DB, bert_index_, fix_name):
 
+def _black_search(quer, DB, bert_index_, fix_name):
+    """
+    黑名单搜索召回策略
+    :param quer:
+    :param DB:
+    :param bert_index_:
+    :param fix_name:
+   return:
+    """
+    exact_values = []
+    segs = jieba.cut_for_search(quer)
+    for seg in segs:
+        if len(seg) < 2:
+            continue
+        ret = DB.objects.filter(key__contains=seg)
+        if ret:
+            # 合并结果
+            for res in ret:
+                exact_values.append(res)
+
+        return {'default_value': quer,
+                f'exact_result_{fix_name}': exact_values[:5],
+                f'fuzzy_result_{fix_name}': [],
+                # f'merge_e_f_result': (exact_values + fuzzy_values)[:max_len],
+                f'bert_result_{fix_name}': [],
+                f'error_content_{fix_name}': ""
+                }
+
+
+def _search(request, DB, bert_index_, fix_name):
     max_len = 50
 
     error_content = ''
     quer = request.GET['q']
     if quer is None or quer == '':
         return render(request, 'search_cxbc.html')
+
+    # 黑名单单独走策略
+    if BLACKBOX.__eq__(fix_name):
+        return _black_search(quer, DB, bert_index_, fix_name)
 
     ret = DB.objects.filter(key=quer)  # key字段
     #   1.完全匹配
@@ -65,12 +99,13 @@ def _search(request, DB, bert_index_, fix_name):
 
     # 合并结果
     return {'default_value': quer,
-                   f'exact_result_{fix_name}': exact_values[:max_len],
-                   f'fuzzy_result_{fix_name}': fuzzy_values[:max_len],
-                   #f'merge_e_f_result': (exact_values + fuzzy_values)[:max_len],
-                   f'bert_result_{fix_name}': bert_values[:max_len],
-                   f'error_content_{fix_name}': error_content
-                   }
+            f'exact_result_{fix_name}': exact_values[:max_len],
+            f'fuzzy_result_{fix_name}': fuzzy_values[:max_len],
+            # f'merge_e_f_result': (exact_values + fuzzy_values)[:max_len],
+            f'bert_result_{fix_name}': bert_values[:max_len],
+            f'error_content_{fix_name}': error_content
+            }
+
 
 def _merge_strategy(res_dict):
     '''
@@ -111,7 +146,7 @@ def _merge_strategy(res_dict):
     search_result.extend(search_exact_values)
     search_result.extend(search_fuzzy_values)
     search_result.extend(search_model_values)
-    search_result =  search_result[:5] #取5个结果
+    search_result = search_result[:5]  # 取5个结果
 
     # 有黑名单就加黑名单 没有加 basic
     if len(black_exact_values) > 0:

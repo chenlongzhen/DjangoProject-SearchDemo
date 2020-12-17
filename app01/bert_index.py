@@ -75,8 +75,6 @@ class bert_index():
                     questions.append(key)
 
             print(f'some qs: {questions[:10]}')
-            print(
-                '%d questions loaded, avg. len of %d' % (len(questions), np.mean([len(d.split()) for d in questions])))
 
             # id 2 que dict
             self.id2que = dict(zip(range(0, len(questions)), questions))
