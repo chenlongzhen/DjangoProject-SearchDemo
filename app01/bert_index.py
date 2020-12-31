@@ -9,7 +9,7 @@ import numpy as np
 from bert_serving.client import BertClient
 from termcolor import colored
 from annoy import AnnoyIndex
-import os
+import os,re
 
 
 class bert_index():
@@ -60,7 +60,8 @@ class bert_index():
         questions = []
         with open(self.corpus_file_name) as fp:
             for line in fp:
-                segs = line.strip().split("[SEP]",1)
+                #segs = line.strip().split("[SEP]",1)
+                segs = re.split("\[SEP\]|;|\t", line.strip())
                 if len(segs) != 2:
                     print(f"error line: {line}")
                     continue
@@ -85,20 +86,20 @@ class bert_index():
         '''
         :return:
         '''
-        print(f"_BuilQuesEmbIndex")
+        print(f"_BuildQuesEmbIndex")
         with BertClient(ip='localhost', port=self.port, port_out=self.port_out) as bc:
             doc_vecs = bc.encode(self.questions)
         self._build_annoy(doc_vecs, self.annoy_file_name)
-        print(f"_BuilQuesEmbIndex done")
+        print(f"_BuildQuesEmbIndex done")
 
-    def bertBuild(self, only_annoy = False):
+    def bertBuild(self, only_annoy = True):
         '''
 
         :return:
         '''
         self._load()
         # 如果annoy文件已有加载已有的不用重新bert build
-        if not only_annoy:
+        if only_annoy:
             self._BuilQuesEmbIndex()
 
         # load to annoy

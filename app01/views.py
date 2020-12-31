@@ -64,7 +64,7 @@ def upload(request, mode):
         with open(BERT_INDEX.corpus_file_name, 'r') as readf:
             count = 1
             for line in readf:
-                segs = line.strip().split("[SEP]", 1)
+                segs = line.strip().split("\[SEP\]|;|\t", 1)
                 if len(segs) < 2:
                     print(f"error line: {line}")
                     continue

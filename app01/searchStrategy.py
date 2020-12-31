@@ -153,7 +153,7 @@ def _merge_strategy(res_dict):
         merge_result.extend(black_exact_values)
     elif len(black_fuzzy_values) > 0:
         merge_result.extend(black_fuzzy_values)
-    elif len(basic_exact_values) > 0:
+    else:
         merge_result.extend(basic_exact_values)
         merge_result.extend(basic_fuzzy_values)
         merge_result.extend(basic_model_values)
