@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.shortcuts import render, HttpResponse, redirect
 from django.db.models import Max, Min
 from app01 import models
-import json, csv, os
+import json, csv, os, re
 from pypinyin import lazy_pinyin
 
 from app01 import bert_index
@@ -64,7 +64,8 @@ def upload(request, mode):
         with open(BERT_INDEX.corpus_file_name, 'r') as readf:
             count = 1
             for line in readf:
-                segs = line.strip().split("\[SEP\]|;|\t", 1)
+                segs = re.split("\[SEP\]|;|\t", line.strip())
+
                 if len(segs) < 2:
                     print(f"error line: {line}")
                     continue

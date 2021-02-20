@@ -18,6 +18,7 @@ class bert_index():
         self.topk = topk
         self.corpus_file_name =  os.path.join('data', file_name+ "_corpus")
         self.annoy_file_name = os.path.join('data' ,file_name + "_annoy")
+        self.emb_file_name = os.path.join('data' ,file_name + "_emb")
         self.id2que = None
         self.vec_len = 768 #任务重启时默认设置为768, 如果换长度了需要重复
         self.port = port
@@ -82,6 +83,22 @@ class bert_index():
         self.questions = questions
         print(f"load corpus: {self.corpus_file_name} done!")
 
+    def _save_data(self, doc_vecs, questions):
+        """
+
+        :param questions:
+        :return:
+        """
+        print(f"saveing embeddings")
+        assert len(doc_vecs) == len(questions), f"vec and ques len not equal"
+
+        with open(self.emb_file_name, "w") as fin:
+            for word,vec in zip(questions, doc_vecs):
+                vec_str = ",".join(map(str,vec))
+                fin.write(f"{word}\t{vec_str}\n")
+        print(f"saveing embeddings done.")
+
+
     def _BuilQuesEmbIndex(self):
         '''
         :return:
@@ -89,6 +106,8 @@ class bert_index():
         print(f"_BuildQuesEmbIndex")
         with BertClient(ip='localhost', port=self.port, port_out=self.port_out) as bc:
             doc_vecs = bc.encode(self.questions)
+
+        self._save_data(doc_vecs, self.questions)
         self._build_annoy(doc_vecs, self.annoy_file_name)
         print(f"_BuildQuesEmbIndex done")
 
