@@ -54,7 +54,7 @@ class bert_index():
 
     def _load(self):
         '''
-
+        加载语料数据，并建立dict 编号映射
         :return:
         '''
         print(f"load corpus: {self.corpus_file_name}")
@@ -62,8 +62,10 @@ class bert_index():
         with open(self.corpus_file_name) as fp:
             for line in fp:
                 #segs = line.strip().split("[SEP]",1)
-                segs = re.split("\[SEP\]|;|\t", line.strip())
-                if len(segs) != 2:
+                segs = re.split("\[SEP\]|;|\t|,", line.strip())
+
+                #  正常输入文本的格式应该为2列 少于两列的调过 大于的只取前两个
+                if len(segs) < 2:
                     print(f"error line: {line}")
                     continue
 
@@ -77,7 +79,7 @@ class bert_index():
                     questions.append(key)
 
             print(f'some qs: {questions[:10]}')
-
+            assert len(questions) > 0, f"{self.corpus_file_name} 文件中没有一条正常数据请修复问题"
             # id 2 que dict
             self.id2que = dict(zip(range(0, len(questions)), questions))
         self.questions = questions
@@ -96,7 +98,7 @@ class bert_index():
             for word,vec in zip(questions, doc_vecs):
                 vec_str = ",".join(map(str,vec))
                 fin.write(f"{word}\t{vec_str}\n")
-        print(f"saveing embeddings done.")
+        print(f"save embeddings done.")
 
 
     def _BuilQuesEmbIndex(self):
@@ -108,6 +110,7 @@ class bert_index():
             doc_vecs = bc.encode(self.questions)
 
         self._save_data(doc_vecs, self.questions)
+        # 建立索引
         self._build_annoy(doc_vecs, self.annoy_file_name)
         print(f"_BuildQuesEmbIndex done")
 
